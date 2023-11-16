@@ -1,22 +1,28 @@
 #ifndef __ENDIAN_READER_HPP__
 #define __ENDIAN_READER_HPP__
 
-#define LITTLE_ENDIAN 0
-#define BIG_ENDIAN 1
+#include <iostream>
+#include <fstream>
 
 class EndianReader
 {
-        char* _filename;
-        byte _buffer[];
+        std::ifstream& _fin;
+        char* _buffer;
         int _position;
         int _endianness;
 
 public:
-        EndianReader(char* filename, int endianness) : _filename(filename), _endianness(endianness), _position(0) {}
-        ~EndianReader();
+        EndianReader(std::ifstream &fin, int endianness) : _fin(fin), _position(0), _endianness(endianness) {}
+        ~EndianReader() {}
 
 private:
-        FillBuffer(int count, int stride);
+        void FillBuffer(const int count, int stride)
+        {
+                char buffer[count];
+                _fin.read(buffer, count);
+                _position += count;
+
+        }
 };
 
 #endif
