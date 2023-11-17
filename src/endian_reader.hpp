@@ -6,22 +6,34 @@
 
 #include <iostream>
 #include <fstream>
+#include <stdexcept>
 
 class EndianReader
 {
         std::ifstream& _fin;
+        int _stream_length;
         char* _buffer;
         int _position;
         int _endianness;
 
 public:
-        EndianReader(std::ifstream &fin, int endianness) : _fin(fin), _position(0), _endianness(endianness) {}
+        EndianReader(std::ifstream& fin, int stream_length, int endianness) 
+                : _fin(fin), _stream_length(stream_length), _position(0), _endianness(endianness) {}
         ~EndianReader()
         {
                 _fin.close();
         }
 
 private:
+        // Throws an exception if the attempted operation is invalid
+        //
+        // int length: the length of bytes to attempt to read
+        void Try(int length)
+        {
+                if(_position + length > _stream_length)
+                        throw std::invalid_argument("length extends past stream");
+        }
+
         // Reverses a subset of the buffer
         //
         // int start: the index at which to start reversing
@@ -44,6 +56,7 @@ private:
         {
                 char buffer[count];
                 _fin.read(buffer, count);
+                _buffer = buffer;
                 _position += count;
                 if(_endianness == ENDIAN_LITTLE)
                 {
@@ -52,6 +65,14 @@ private:
                                 ReverseBufferSegment(i, stride);
                         }
                 }
+        }
+
+public:
+        char ReadByte()
+        {
+                Try(1);
+                FillBuffer(1, 1);
+                return _buffer[0];
         }
 };
 
