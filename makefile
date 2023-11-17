@@ -1,12 +1,13 @@
 CC = g++
 CFLAGS = -g -Wall
 SOURCES = ./src/endian_reader.hpp
+TESTS = ./tests/test1.cpp
 
-tests:
-	$(CC) $(CFLAGS) ./test/main.cpp $(SOURCES) -o ./out/$@
+testcompile:
+	$(CC) $(CFLAGS) $(TESTS) $(SOURCES) -o ./out/test1
 
-run:
-	./out/tests
+runtests:
+	./out/test1
 
 clean:
 	rm -f ./out/*

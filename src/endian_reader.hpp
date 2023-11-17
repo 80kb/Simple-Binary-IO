@@ -17,8 +17,23 @@ class EndianReader
         int _endianness;
 
 public:
-        EndianReader(std::ifstream& fin, int stream_length, int endianness) 
-                : _fin(fin), _stream_length(stream_length), _position(0), _endianness(endianness) {}
+        EndianReader(std::ifstream& fin, const char* filename, int endianness) : _fin(fin), _position(0), _endianness(endianness)
+        {
+                // Get file length
+                std::ifstream file(filename, std::ios::binary | std::ios::in | std::ios::ate);
+                int size = -1;
+                if(file)
+                {
+                        file.seekg(0, std::ios::end);
+                        size = file.tellg();
+                }
+                else
+                {
+                        perror(filename);
+                }
+                _stream_length = size;
+                file.close();
+        }
         ~EndianReader()
         {
                 _fin.close();
@@ -68,11 +83,23 @@ private:
         }
 
 public:
+        // Returns single byte from stream
         char ReadByte()
         {
                 Try(1);
                 FillBuffer(1, 1);
                 return _buffer[0];
+        }
+
+        // Returns array of bytes from stream
+        //
+        // char* bytes: the return array in which to store the bytes
+        // int length: the amount of bytes to read
+        void ReadBytes(char* bytes, int length)
+        {
+                Try(length);
+                for(int i = 0; i < length; i++)
+                        bytes[i] = ReadByte();
         }
 };
 
