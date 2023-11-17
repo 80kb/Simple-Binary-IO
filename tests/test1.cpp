@@ -5,8 +5,14 @@
 
 int main(int argc, char** argv)
 {
-        std::ifstream fin("course.kmp", std::ios::in | std::ios::binary);
-        EndianReader reader(fin, "course.kmp", ENDIAN_BIG);
+        if(argc != 2)
+        {
+                std::cout << "missing file argument" << std::endl;
+                return 1;
+        }
+        
+        std::ifstream fin(argv[1], std::ios::in | std::ios::binary);
+        EndianReader reader(fin, argv[1], ENDIAN_BIG);
 
         char magic[4];
         reader.ReadBytes(magic, 4);
