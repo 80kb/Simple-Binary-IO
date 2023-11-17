@@ -55,11 +55,14 @@ private:
         // int size: the amount of elements in the subset to reverse
         void ReverseBufferSegment(int start, int size)
         {
-                for(int i = start; i < size / 2; i++)
+                int end = start + size - 1;
+                while (start < end)
                 {
-                        int tmp = _buffer[i];
-                        _buffer[i] = _buffer[(start + size) - i];
-                        _buffer[(start + size) - i] = tmp;
+                        int temp = _buffer[start];
+                        _buffer[start] = _buffer[end];
+                        _buffer[end] = temp;
+                        start++;
+                        end--;
                 }
         }
 
@@ -73,17 +76,18 @@ private:
                 _fin.read(buffer, count);
                 _buffer = buffer;
                 _position += count;
-                if(_endianness == ENDIAN_LITTLE)
+                if(_endianness == ENDIAN_BIG)
                 {
                         for(int i = 0; i < count; i += stride)
-                        {
                                 ReverseBufferSegment(i, stride);
-                        }
                 }
         }
 
 public:
-        // Returns single byte from stream
+        //////////////////////
+        ///// Read Bytes /////
+        //////////////////////
+        
         char ReadByte()
         {
                 Try(1);
@@ -91,15 +95,80 @@ public:
                 return _buffer[0];
         }
 
-        // Returns array of bytes from stream
-        //
-        // char* bytes: the return array in which to store the bytes
-        // int length: the amount of bytes to read
         void ReadBytes(char* bytes, int length)
         {
                 Try(length);
                 for(int i = 0; i < length; i++)
                         bytes[i] = ReadByte();
+        }
+
+        signed char ReadSByte()
+        {
+                Try(1);
+                FillBuffer(1, 1);
+                return (signed char)_buffer[0];
+        }
+
+        void ReadSBytes(char* sbytes, int length)
+        {
+                Try(length);
+                for(int i = 0; i < length; i++)
+                        sbytes[i] = ReadSByte();
+        }
+        
+        //////////////////////
+        ///// Read Int16 /////
+        //////////////////////
+
+        unsigned short ReadUInt16()
+        {
+                Try(2);
+                FillBuffer(2, 2);
+                return ((unsigned short)_buffer[0] << 8) | _buffer[1];
+        }
+
+        void ReadUInt16s(unsigned short* arr, int length)
+        {
+                Try(length * 2);
+                for(int i = 0; i < length; i++)
+                        arr[i] = ReadUInt16();
+        }
+
+        short ReadInt16()
+        {
+                Try(2);
+                FillBuffer(2, 2);
+                return ((short)_buffer[0] << 8) | _buffer[1];
+        }
+
+        void ReadInt16s(short* arr, int length)
+        {
+                Try(length * 2);
+                for(int i = 0; i < length; i++)
+                        arr[i] = ReadInt16();
+        }
+
+        //////////////////////
+        ///// Read Int32 /////
+        //////////////////////
+
+        unsigned int ReadUInt32()
+        {
+                Try(4);
+                FillBuffer(4, 4);
+
+
+                return ((unsigned int)_buffer[0] << 24) |
+                        (_buffer[1] << 16) |
+                        (_buffer[2] << 8) |
+                        _buffer[3];
+        }
+
+        void ReadUInt32s(unsigned int* arr, int length)
+        {
+                Try(length * 4);
+                for(int i = 0; i < length; i++)
+                        arr[i] = ReadUInt32();
         }
 };
 
