@@ -4,6 +4,8 @@
 #define ENDIAN_LITTLE 0
 #define ENDIAN_BIG 1
 
+#include <string.h>
+#include <string>
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
@@ -121,12 +123,12 @@ public:
         ///// Read Int16 /////
         //////////////////////
 
-        unsigned short ReadUInt16()
+        uint16_t ReadUInt16()
         {
                 Try(2);
                 char buffer[2];
                 FillBuffer(buffer, 2, 2);
-                return (unsigned short)((unsigned char)buffer[1] << 8) | 
+                return (uint16_t)((unsigned char)buffer[1] << 8) | 
                         (unsigned char)buffer[0];
         }
 
@@ -137,12 +139,12 @@ public:
                         arr[i] = ReadUInt16();
         }
 
-        short ReadInt16()
+        uint16_t ReadInt16()
         {
                 Try(2);
                 char buffer[2];
                 FillBuffer(buffer, 2, 2);
-                return (short)((unsigned char)buffer[1] << 8) | 
+                return (uint16_t)((unsigned char)buffer[1] << 8) | 
                         (unsigned char)buffer[0];
         }
 
@@ -154,16 +156,54 @@ public:
         }
 
         //////////////////////
+        ///// Read Int24 /////
+        //////////////////////
+
+        uint32_t ReadUInt24()
+        {
+                Try(3);
+                char buffer[3];
+                FillBuffer(buffer, 3, 3);
+                return (uint32_t)((unsigned char)buffer[2] << 16) |
+                        ((unsigned char)buffer[1] << 8) |
+                        (unsigned char)buffer[0];
+        }
+
+        void ReadUInt24s(unsigned int* arr, int length)
+        {
+                Try(length * 3);
+                for(int i = 0; i < length; i++)
+                        arr[i] = ReadUInt24();
+        }
+
+        int32_t ReadInt24()
+        {
+                Try(3);
+                char buffer[3];
+                FillBuffer(buffer, 3, 3);
+                return (int32_t)((unsigned char)buffer[2] << 16) |
+                        ((unsigned char)buffer[1] << 8) |
+                        (unsigned char)buffer[0];
+        }
+
+        void ReadInt24s(int* arr, int length)
+        {
+                Try(length * 3);
+                for(int i = 0; i < length; i++)
+                        arr[i] = ReadInt24();
+        }
+
+        //////////////////////
         ///// Read Int32 /////
         //////////////////////
 
-        unsigned int ReadUInt32()
+        uint32_t ReadUInt32()
         {
                 Try(4);
                 char buffer[4];
                 FillBuffer(buffer, 4, 4);
 
-                return (unsigned int)((unsigned char)buffer[3] << 24) |
+                return (uint32_t)((unsigned char)buffer[3] << 24) |
                         ((unsigned char)buffer[2] << 16) |
                         ((unsigned char)buffer[1] << 8) |
                         (unsigned char)buffer[0];
@@ -174,6 +214,75 @@ public:
                 Try(length * 4);
                 for(int i = 0; i < length; i++)
                         arr[i] = ReadUInt32();
+        }
+
+        int32_t ReadInt32()
+        {
+                Try(4);
+                char buffer[4];
+                FillBuffer(buffer, 4, 4);
+                return (int32_t)((unsigned char)buffer[3] << 24) |
+                        ((unsigned char)buffer[2] << 16) |
+                        ((unsigned char)buffer[1] << 8) |
+                        (unsigned char)buffer[0];
+        }
+
+        void ReadInt32s(int* arr, int length)
+        {
+                Try(length * 4);
+                for(int i = 0; i < length; i++)
+                        arr[i] = ReadInt32();
+        }
+
+        ///////////////////////
+        ///// Read Double /////
+        ///////////////////////
+
+        double ReadDouble()
+        {
+                Try(8);
+                char buffer[8];
+                FillBuffer(buffer, 8, 8);
+
+                double out;
+                memcpy(&out, buffer, sizeof out);
+                return out;
+        }
+
+        void ReadDoubles(double* arr, int length)
+        {
+                Try(length * 8);
+                for(int i = 0; i < length; i++)
+                        arr[i] = ReadDouble();
+        }
+
+        ////////////////////////
+        ///// Read Strings /////
+        ////////////////////////
+        
+        std::string ReadString(int length)
+        {
+                Try(length);
+                char buffer[1024];
+                FillBuffer(buffer, length, 1);
+                
+                std::string out = "";
+                for(int i = 0; i < length; i++)
+                        out += buffer[i];
+
+                return out;
+        }
+
+        std::string ReadStringNT()
+        {
+                std::string out = "";
+                char letter = ReadByte();
+                while(letter != 0)
+                {
+                        out += letter;
+                        letter = ReadByte();
+                }
+                return out;
         }
 };
 
