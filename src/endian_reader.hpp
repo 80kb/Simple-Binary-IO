@@ -12,7 +12,6 @@ class EndianReader
 {
         std::ifstream& _fin;
         int _stream_length;
-        char* _buffer;
         int _position;
         int _endianness;
 
@@ -53,14 +52,14 @@ private:
         //
         // int start: the index at which to start reversing
         // int size: the amount of elements in the subset to reverse
-        void ReverseBufferSegment(int start, int size)
+        void ReverseBufferSegment(char* buffer, int start, int size)
         {
                 int end = start + size - 1;
                 while (start < end)
                 {
-                        int temp = _buffer[start];
-                        _buffer[start] = _buffer[end];
-                        _buffer[end] = temp;
+                        int temp = buffer[start];
+                        buffer[start] = buffer[end];
+                        buffer[end] = temp;
                         start++;
                         end--;
                 }
@@ -70,16 +69,16 @@ private:
         //
         // const int count: the amount of bytes to read
         // int stride: the size of each datatype subdivision
-        void FillBuffer(const int count, int stride)
+        void FillBuffer(char* buffer, const int count, int stride)
         {
-                char buffer[count];
                 _fin.read(buffer, count);
-                _buffer = buffer;
                 _position += count;
                 if(_endianness == ENDIAN_BIG)
                 {
                         for(int i = 0; i < count; i += stride)
-                                ReverseBufferSegment(i, stride);
+                        {
+                                ReverseBufferSegment(buffer, i, stride);
+                        }
                 }
         }
 
@@ -91,8 +90,9 @@ public:
         char ReadByte()
         {
                 Try(1);
-                FillBuffer(1, 1);
-                return _buffer[0];
+                char buffer[1];
+                FillBuffer(buffer, 1, 1);
+                return buffer[0];
         }
 
         void ReadBytes(char* bytes, int length)
@@ -105,8 +105,9 @@ public:
         signed char ReadSByte()
         {
                 Try(1);
-                FillBuffer(1, 1);
-                return (signed char)_buffer[0];
+                char buffer[1];
+                FillBuffer(buffer, 1, 1);
+                return (signed char)buffer[0];
         }
 
         void ReadSBytes(char* sbytes, int length)
@@ -123,8 +124,10 @@ public:
         unsigned short ReadUInt16()
         {
                 Try(2);
-                FillBuffer(2, 2);
-                return ((unsigned short)_buffer[0] << 8) | _buffer[1];
+                char buffer[2];
+                FillBuffer(buffer, 2, 2);
+                return (unsigned short)((unsigned char)buffer[1] << 8) | 
+                        (unsigned char)buffer[0];
         }
 
         void ReadUInt16s(unsigned short* arr, int length)
@@ -137,8 +140,10 @@ public:
         short ReadInt16()
         {
                 Try(2);
-                FillBuffer(2, 2);
-                return ((short)_buffer[0] << 8) | _buffer[1];
+                char buffer[2];
+                FillBuffer(buffer, 2, 2);
+                return (short)((unsigned char)buffer[1] << 8) | 
+                        (unsigned char)buffer[0];
         }
 
         void ReadInt16s(short* arr, int length)
@@ -155,13 +160,13 @@ public:
         unsigned int ReadUInt32()
         {
                 Try(4);
-                FillBuffer(4, 4);
+                char buffer[4];
+                FillBuffer(buffer, 4, 4);
 
-
-                return ((unsigned int)_buffer[0] << 24) |
-                        (_buffer[1] << 16) |
-                        (_buffer[2] << 8) |
-                        _buffer[3];
+                return (unsigned int)((unsigned char)buffer[3] << 24) |
+                        ((unsigned char)buffer[2] << 16) |
+                        ((unsigned char)buffer[1] << 8) |
+                        (unsigned char)buffer[0];
         }
 
         void ReadUInt32s(unsigned int* arr, int length)
