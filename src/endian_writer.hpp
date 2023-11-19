@@ -10,7 +10,7 @@ class EndianWriter
         int _endianness;
 
 public:
-        EndianWriter(char* filename, int endianness) : _position(0), _endianness(endianness)
+        EndianWriter(const char* filename, int endianness) : _position(0), _endianness(endianness)
         {
                 _fout.open(filename, std::ios::out | std::ios::binary);
         }
