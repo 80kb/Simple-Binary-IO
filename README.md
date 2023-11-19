@@ -2,7 +2,7 @@
 Simple C++ binary reader/writer made to mimic the syntax of C# binary streams. Supports both big and little endian.
 
 ## Example Usage
-Full functionality showcased in [tests/main.cpp](tests/main.cpp)
+Full functionality showcased in [tests](tests/)
 ```c++
 #include "endian_writer.hpp"
 
