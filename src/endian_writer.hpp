@@ -16,8 +16,12 @@ public:
         }
         ~EndianWriter()
         {
-                _fout.close();
+                Close();
         }
+
+        int Position() { return _position; }
+        int Endianness() { return _endianness; }
+        void Close() { _fout.close(); }
 
 private:
 

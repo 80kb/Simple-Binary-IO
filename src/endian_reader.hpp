@@ -35,12 +35,13 @@ public:
         }
         ~EndianReader()
         {
-                _fin.close();
+                Close();
         }
 
         int Position() { return _position; }
         int Length() { return _stream_length; }
         int Endianness() { return _endianness; }
+        void Close() { _fin.close(); }
 
 private:
         //--- Throws an exception if the attempted operation is invalid
