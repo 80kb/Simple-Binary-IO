@@ -1,26 +1,20 @@
 #ifndef __ENDIAN_READER_HPP__
 #define __ENDIAN_READER_HPP__
 
-#define ENDIAN_LITTLE 0
-#define ENDIAN_BIG 1
-
-#include <string.h>
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <stdexcept>
+#include "endian_lib.hpp"
 
 class EndianReader
 {
-        std::ifstream& _fin;
+        std::ifstream _fin;
         int _stream_length;
         int _position;
         int _endianness;
 
 public:
-        EndianReader(std::ifstream& fin, const char* filename, int endianness) : _fin(fin), _position(0), _endianness(endianness)
+        EndianReader(const char* filename, int endianness) : _position(0), _endianness(endianness)
         {
-                // Get file length
+                //--- Get file length
+
                 std::ifstream file(filename, std::ios::binary | std::ios::in | std::ios::ate);
                 int size = -1;
                 if(file)
@@ -34,26 +28,31 @@ public:
                 }
                 _stream_length = size;
                 file.close();
+
+                //--- Open stream for reading
+
+                _fin.open(filename, std::ios::in | std::ios::binary);
         }
         ~EndianReader()
         {
                 _fin.close();
         }
 
+        int Position() { return _position; }
+        int Length() { return _stream_length; }
+        int Endianness() { return _endianness; }
+
 private:
-        // Throws an exception if the attempted operation is invalid
-        //
-        // int length: the length of bytes to attempt to read
+        //--- Throws an exception if the attempted operation is invalid
+
         void Try(int length)
         {
                 if(_position + length > _stream_length)
                         throw std::invalid_argument("length extends past stream");
         }
 
-        // Reverses a subset of the buffer
-        //
-        // int start: the index at which to start reversing
-        // int size: the amount of elements in the subset to reverse
+        //--- Reverses a subset of the buffer
+        
         void ReverseBufferSegment(char* buffer, int start, int size)
         {
                 int end = start + size - 1;
@@ -67,10 +66,8 @@ private:
                 }
         }
 
-        // Reads a given amount of bytes into the buffer
-        //
-        // const int count: the amount of bytes to read
-        // int stride: the size of each datatype subdivision
+        //--- Reads a given amount of bytes into the buffer
+
         void FillBuffer(char* buffer, const int count, int stride)
         {
                 _fin.read(buffer, count);
@@ -78,16 +75,14 @@ private:
                 if(_endianness == ENDIAN_BIG)
                 {
                         for(int i = 0; i < count; i += stride)
-                        {
                                 ReverseBufferSegment(buffer, i, stride);
-                        }
                 }
         }
 
 public:
-        //////////////////////
-        ///// Read Bytes /////
-        //////////////////////
+        ////////////////////////////////////////////////////////////////////////
+        ////////////////                Read Bytes              ////////////////
+        ////////////////////////////////////////////////////////////////////////
         
         char ReadByte()
         {
@@ -119,9 +114,9 @@ public:
                         sbytes[i] = ReadSByte();
         }
         
-        //////////////////////
-        ///// Read Int16 /////
-        //////////////////////
+        ////////////////////////////////////////////////////////////////////////
+        ////////////////                Read Int16              ////////////////
+        ////////////////////////////////////////////////////////////////////////
 
         uint16_t ReadUInt16()
         {
@@ -155,9 +150,9 @@ public:
                         arr[i] = ReadInt16();
         }
 
-        //////////////////////
-        ///// Read Int24 /////
-        //////////////////////
+        ////////////////////////////////////////////////////////////////////////
+        ////////////////                Read Int24              ////////////////
+        ////////////////////////////////////////////////////////////////////////
 
         uint32_t ReadUInt24()
         {
@@ -193,9 +188,9 @@ public:
                         arr[i] = ReadInt24();
         }
 
-        //////////////////////
-        ///// Read Int32 /////
-        //////////////////////
+        ////////////////////////////////////////////////////////////////////////
+        ////////////////                Read Int32              ////////////////
+        ////////////////////////////////////////////////////////////////////////
 
         uint32_t ReadUInt32()
         {
@@ -234,9 +229,31 @@ public:
                         arr[i] = ReadInt32();
         }
 
-        ///////////////////////
-        ///// Read Double /////
-        ///////////////////////
+        ////////////////////////////////////////////////////////////////////////
+        ////////////////                Read Float              ////////////////
+        ////////////////////////////////////////////////////////////////////////
+
+        double ReadFloat()
+        {
+                Try(4);
+                char buffer[4];
+                FillBuffer(buffer, 4, 4);
+
+                float out;
+                memcpy(&out, buffer, sizeof out);
+                return out;
+        }
+
+        void ReadFloats(float* arr, int length)
+        {
+                Try(length * 4);
+                for(int i = 0; i < length; i++)
+                        arr[i] = ReadFloat();
+        }
+
+        /////////////////////////////////////////////////////////////////////////
+        ////////////////                Read Double              ////////////////
+        /////////////////////////////////////////////////////////////////////////
 
         double ReadDouble()
         {
@@ -256,23 +273,10 @@ public:
                         arr[i] = ReadDouble();
         }
 
-        ////////////////////////
-        ///// Read Strings /////
-        ////////////////////////
+        //////////////////////////////////////////////////////////////////////////
+        ////////////////                Read Strings              ////////////////
+        //////////////////////////////////////////////////////////////////////////
         
-        std::string ReadString(int length)
-        {
-                Try(length);
-                char buffer[1024];
-                FillBuffer(buffer, length, 1);
-                
-                std::string out = "";
-                for(int i = 0; i < length; i++)
-                        out += buffer[i];
-
-                return out;
-        }
-
         std::string ReadStringNT()
         {
                 std::string out = "";
