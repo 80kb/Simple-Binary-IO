@@ -10,6 +10,8 @@ Full functionality showcased in [tests/main.cpp](tests/main.cpp)
 EndianWriter writer("sample.bin", ENDIAN_BIG);
 uint32_t num = 0xC0FFEE;
 writer.WriteUInt32(num);
+
+writer.Close();
 ```
 ```c++
 #include "endian_reader.hpp"
@@ -17,4 +19,6 @@ writer.WriteUInt32(num);
 //--- Creates a new reader and reads a big-endian unsigned integer
 EndianReader reader("sample.bin", ENDIAN_BIG);
 uint32_t num = reader.ReadUInt32();
+
+reader.Close();
 ```
