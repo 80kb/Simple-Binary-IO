@@ -38,9 +38,15 @@ public:
                 Close();
         }
 
-        int Position() { return _position; }
-        int Length() { return _stream_length; }
-        int Endianness() { return _endianness; }
+        int GetPosition() { return _fin.tellg(); }
+        void SetPosition(int position)
+        {
+                _position = position;
+                _fin.seekg(position, std::ios::beg);
+        }
+
+        int GetLength() { return _stream_length; }
+        int GetEndianness() { return _endianness; }
         void Close() { _fin.close(); }
 
 private:
@@ -53,7 +59,7 @@ private:
         }
 
         //--- Reverses a subset of the buffer
-        
+
         void ReverseBufferSegment(char* buffer, int start, int size)
         {
                 int end = start + size - 1;
@@ -84,37 +90,41 @@ public:
         ////////////////////////////////////////////////////////////////////////
         ////////////////                Read Bytes              ////////////////
         ////////////////////////////////////////////////////////////////////////
-        
-        char ReadByte()
+
+        uint8_t ReadByte()
         {
                 Try(1);
                 char buffer[1];
                 FillBuffer(buffer, 1, 1);
-                return buffer[0];
+                return (uint8_t)buffer[0];
         }
 
-        void ReadBytes(char* bytes, int length)
+        std::vector<uint8_t> ReadBytes(int length)
         {
                 Try(length);
+                std::vector<uint8_t> buffer;
                 for(int i = 0; i < length; i++)
-                        bytes[i] = ReadByte();
+                        buffer.push_back(ReadByte());
+                return buffer;
         }
 
-        signed char ReadSByte()
+        int8_t ReadSByte()
         {
                 Try(1);
                 char buffer[1];
                 FillBuffer(buffer, 1, 1);
-                return (signed char)buffer[0];
+                return (int8_t)buffer[0];
         }
 
-        void ReadSBytes(char* sbytes, int length)
+        std::vector<int8_t> ReadSBytes(int length)
         {
                 Try(length);
+                std::vector<int8_t> buffer;
                 for(int i = 0; i < length; i++)
-                        sbytes[i] = ReadSByte();
+                        buffer.push_back(ReadSByte());
+                return buffer;
         }
-        
+
         ////////////////////////////////////////////////////////////////////////
         ////////////////                Read Int16              ////////////////
         ////////////////////////////////////////////////////////////////////////
@@ -124,31 +134,35 @@ public:
                 Try(2);
                 char buffer[2];
                 FillBuffer(buffer, 2, 2);
-                return (uint16_t)((unsigned char)buffer[1] << 8) | 
+                return (uint16_t)((unsigned char)buffer[1] << 8) |
                         (unsigned char)buffer[0];
         }
 
-        void ReadUInt16s(unsigned short* arr, int length)
+        std::vector<uint16_t> ReadUInt16s(int length)
         {
-                Try(length * 2);
+                Try(length * sizeof(uint16_t));
+                std::vector<uint16_t> buffer;
                 for(int i = 0; i < length; i++)
-                        arr[i] = ReadUInt16();
+                        buffer.push_back(ReadUInt16());
+                return buffer;
         }
 
-        uint16_t ReadInt16()
+        int16_t ReadInt16()
         {
                 Try(2);
                 char buffer[2];
                 FillBuffer(buffer, 2, 2);
-                return (uint16_t)((unsigned char)buffer[1] << 8) | 
+                return (uint16_t)((unsigned char)buffer[1] << 8) |
                         (unsigned char)buffer[0];
         }
 
-        void ReadInt16s(short* arr, int length)
+        std::vector<int16_t> ReadInt16s(int length)
         {
-                Try(length * 2);
+                Try(length * sizeof(int16_t));
+                std::vector<int16_t> buffer;
                 for(int i = 0; i < length; i++)
-                        arr[i] = ReadInt16();
+                        buffer.push_back(ReadInt16());
+                return buffer;
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -165,11 +179,13 @@ public:
                         (unsigned char)buffer[0];
         }
 
-        void ReadUInt24s(unsigned int* arr, int length)
+        std::vector<uint32_t> ReadUInt24s(int length)
         {
                 Try(length * 3);
+                std::vector<uint32_t> buffer;
                 for(int i = 0; i < length; i++)
-                        arr[i] = ReadUInt24();
+                        buffer.push_back(ReadUInt24());
+                return buffer;
         }
 
         int32_t ReadInt24()
@@ -182,11 +198,13 @@ public:
                         (unsigned char)buffer[0];
         }
 
-        void ReadInt24s(int* arr, int length)
+        std::vector<int32_t> ReadInt24s(int length)
         {
                 Try(length * 3);
+                std::vector<int32_t> buffer;
                 for(int i = 0; i < length; i++)
-                        arr[i] = ReadInt24();
+                        buffer.push_back(ReadInt24());
+                return buffer;
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -205,11 +223,13 @@ public:
                         (unsigned char)buffer[0];
         }
 
-        void ReadUInt32s(unsigned int* arr, int length)
+        std::vector<uint32_t> ReadUInt32s(int length)
         {
-                Try(length * 4);
+                Try(length * sizeof(uint32_t));
+                std::vector<uint32_t> buffer;
                 for(int i = 0; i < length; i++)
-                        arr[i] = ReadUInt32();
+                        buffer.push_back(ReadUInt32());
+                return buffer;
         }
 
         int32_t ReadInt32()
@@ -223,18 +243,20 @@ public:
                         (unsigned char)buffer[0];
         }
 
-        void ReadInt32s(int* arr, int length)
+        std::vector<int32_t> ReadInt32s(int length)
         {
-                Try(length * 4);
+                Try(length * sizeof(int32_t));
+                std::vector<int32_t> buffer;
                 for(int i = 0; i < length; i++)
-                        arr[i] = ReadInt32();
+                        buffer.push_back(ReadInt32());
+                return buffer;
         }
 
         ////////////////////////////////////////////////////////////////////////
         ////////////////                Read Float              ////////////////
         ////////////////////////////////////////////////////////////////////////
 
-        double ReadFloat()
+        float ReadFloat()
         {
                 Try(4);
                 char buffer[4];
@@ -245,11 +267,13 @@ public:
                 return out;
         }
 
-        void ReadFloats(float* arr, int length)
+        std::vector<float> ReadFloats(int length)
         {
-                Try(length * 4);
+                Try(length * sizeof(float));
+                std::vector<float> buffer;
                 for(int i = 0; i < length; i++)
-                        arr[i] = ReadFloat();
+                        buffer.push_back(ReadFloat());
+                return buffer;
         }
 
         /////////////////////////////////////////////////////////////////////////
@@ -267,17 +291,19 @@ public:
                 return out;
         }
 
-        void ReadDoubles(double* arr, int length)
+        std::vector<double> ReadDoubles(int length)
         {
-                Try(length * 8);
+                Try(length * sizeof(double));
+                std::vector<double> buffer;
                 for(int i = 0; i < length; i++)
-                        arr[i] = ReadDouble();
+                        buffer.push_back(ReadDouble());
+                return buffer;
         }
 
         //////////////////////////////////////////////////////////////////////////
         ////////////////                Read Strings              ////////////////
         //////////////////////////////////////////////////////////////////////////
-        
+
         std::string ReadStringNT()
         {
                 std::string out = "";

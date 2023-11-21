@@ -19,8 +19,14 @@ public:
                 Close();
         }
 
-        int Position() { return _position; }
-        int Endianness() { return _endianness; }
+        int GetPosition() { return _fout.tellp(); }
+        void SetPosition(int position)
+        {
+                _position = position;
+                _fout.seekp(position, std::ios::beg);
+        }
+
+        int GetEndianness() { return _endianness; }
         void Close() { _fout.close(); }
 
 private:
@@ -58,30 +64,30 @@ public:
         ////////////////////////////////////////////////////////////////////////
         ////////////////                Write Byte              ////////////////
         ////////////////////////////////////////////////////////////////////////
-        
-        void WriteByte(char data)
-        {
-                char buffer[1];
-                buffer[0] = data;
-                WriteBuffer(buffer, 1, 1);
-        }
 
-        void WriteBytes(char* data, int length)
-        {
-                for(int i = 0; i < length; i++)
-                        WriteByte(data[i]);
-        }
-
-        void WriteSByte(signed char data)
+        void WriteByte(uint8_t data)
         {
                 char buffer[1];
                 buffer[0] = (char)data;
                 WriteBuffer(buffer, 1, 1);
         }
 
-        void WriteSBytes(signed char* data, int length)
+        void WriteBytes(std::vector<uint8_t> data)
         {
-                for(int i = 0; i < length; i++)
+                for(int i = 0; i < data.size(); i++)
+                        WriteByte(data[i]);
+        }
+
+        void WriteSByte(int8_t data)
+        {
+                char buffer[1];
+                buffer[0] = (char)data;
+                WriteBuffer(buffer, 1, 1);
+        }
+
+        void WriteSBytes(std::vector<int8_t> data)
+        {
+                for(int i = 0; i < data.size(); i++)
                         WriteSByte(data[i]);
         }
 
@@ -96,9 +102,9 @@ public:
                 WriteBuffer(buffer, 2, 2);
         }
 
-        void WriteUInt16s(uint16_t* data, int length)
+        void WriteUInt16s(std::vector<uint16_t> data)
         {
-                for(int i = 0; i < length; i++)
+                for(int i = 0; i < data.size(); i++)
                         WriteUInt16(data[i]);
         }
 
@@ -109,9 +115,9 @@ public:
                 WriteBuffer(buffer, 2, 2);
         }
 
-        void WriteInt16s(int16_t* data, int length)
+        void WriteInt16s(std::vector<int16_t> data)
         {
-                for(int i = 0; i < length; i++)
+                for(int i = 0; i < data.size(); i++)
                         WriteInt16(data[i]);
         }
 
@@ -128,24 +134,24 @@ public:
                 WriteBuffer(buffer, 3, 3);
         }
 
-        void WriteUInt24(uint32_t* data, int length)
+        void WriteUInt24(std::vector<uint32_t> data)
         {
-                for(int i = 0; i < length; i++)
+                for(int i = 0; i < data.size(); i++)
                         WriteUInt24(data[i]);
         }
 
-        void WriteInt24(uint32_t data)
+        void WriteInt24(int32_t data)
         {
                 char buffer[3];
-                buffer[2] = (char)((uint32_t)(data >> 16) & 0xFFu);
-                buffer[1] = (char)((uint32_t)(data >> 8) & 0xFFu);
-                buffer[0] = (char)((uint32_t)data & 0xFFu);
+                buffer[2] = (char)((int32_t)(data >> 16) & 0xFFu);
+                buffer[1] = (char)((int32_t)(data >> 8) & 0xFFu);
+                buffer[0] = (char)((int32_t)data & 0xFFu);
                 WriteBuffer(buffer, 3, 3);
         }
 
-        void WriteInt24s(uint32_t* data, int length)
+        void WriteInt24s(std::vector<int32_t> data)
         {
-                for(int i = 0; i < length; i++)
+                for(int i = 0; i < data.size(); i++)
                         WriteInt24(data[i]);
         }
 
@@ -160,9 +166,9 @@ public:
                 WriteBuffer(buffer, 4, 4);
         }
 
-        void WriteUInt32s(uint32_t* data, int length)
+        void WriteUInt32s(std::vector<uint32_t> data)
         {
-                for(int i = 0; i < length; i++)
+                for(int i = 0; i < data.size(); i++)
                         WriteUInt32(data[i]);
         }
 
@@ -173,9 +179,9 @@ public:
                 WriteBuffer(buffer, 4, 4);
         }
 
-        void WriteInt32s(int32_t* data, int length)
+        void WriteInt32s(std::vector<int32_t> data)
         {
-                for(int i = 0; i < length; i++)
+                for(int i = 0; i < data.size(); i++)
                         WriteInt32(data[i]);
         }
 
@@ -190,9 +196,9 @@ public:
                 WriteBuffer(buffer, 4, 4);
         }
 
-        void WriteFloats(float* data, int length)
+        void WriteFloats(std::vector<float> data)
         {
-                for(int i = 0; i < length; i++)
+                for(int i = 0; i < data.size(); i++)
                         WriteFloat(data[i]);
         }
 
@@ -207,19 +213,19 @@ public:
                 WriteBuffer(buffer, 8, 8);
         }
 
-        void WriteDoubles(double* data, int length)
+        void WriteDoubles(std::vector<double> data)
         {
-                for(int i = 0; i < length; i++)
+                for(int i = 0; i < data.size(); i++)
                         WriteDouble(data[i]);
         }
 
         ////////////////////////////////////////////////////////////////////////
         ////////////////                Write Strings           ////////////////
         ////////////////////////////////////////////////////////////////////////
-        
-        void WriteStringNT(char* data, int size)
+
+        void WriteStringNT(std::string data)
         {
-                for(int i = 0; i < size - 1; i++)
+                for(int i = 0; i < data.size(); i++)
                         WriteByte(data[i]);
                 WriteByte(0);
         }
