@@ -1,7 +1,7 @@
-#include "endian_reader.hpp"
+#include "endian_lib.hpp"
+#include <string.h>
 
-EndianReader::EndianReader(const char* filename, int endianness)
-        : _position(0), _endianness(endianness)
+EndianReader::EndianReader(const char* filename, int endianness) : _endianness(endianness)
 {
         // Get file length
         std::ifstream file(filename, std::ios::binary | std::ios::in | std::ios::ate);
@@ -28,22 +28,8 @@ void EndianReader::SetPosition(int position) { _fin.seekg(position, std::ios::be
 //--- Cleanup
 void EndianReader::Close() { _fin.close(); }
 
-////////////////////////////////////////////////////////////////////////////////
-
 //--- Asserts that read attempt does not exceed stream length
-void EndianReader::Try(int length) { ENDIAN_ASSERT(_position + length > _stream_length); }
-
-//--- Reverse a subset of the given buffer
-void EndianReader::ReverseBufferSegment(char* buffer, int start, int size)
-{
-        int end = start + size - 1;
-        while (start < end) {
-                int temp = buffer[start];
-                buffer[start] = buffer[end];
-                buffer[end] = temp;
-                start++; end--;
-        }
-}
+void EndianReader::Try(int length) { ENDIAN_ASSERT(GetPosition() + length <= _stream_length); }
 
 //--- Reads a given amount of raw bytes into buffer
 void EndianReader::FillBuffer(char* buffer, const int count, int stride)

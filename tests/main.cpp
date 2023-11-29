@@ -1,5 +1,5 @@
-#include "../src/endian_writer.hpp"
-#include "../src/endian_reader.hpp"
+#include <iostream>
+#include "../src/endian_lib.hpp"
 
 int main()
 {
@@ -24,8 +24,8 @@ int main()
         uint32_t num3 = 0xC0FFEE;
         writer.WriteInt32(num3);
 
-        char word[6] = "money";
-        writer.WriteStringNT(word, 6);
+        std::string word = "money";
+        writer.WriteStringNT(word);
 
         float num4 = 0.456;
         writer.WriteFloat(num4);
