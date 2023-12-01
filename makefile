@@ -1,8 +1,11 @@
 CC = g++
 CFLAGS = -g -Wall
 
-test: ./tests/main.cpp ./src/endian_lib.hpp
-	$(CC) $(CFLAGS) $^ -o ./out/$@
+HDR_FILES = ./src/endian_lib.hpp
+SRC_FILES = ./src/endian_reader.cpp ./src/endian_writer.cpp
+
+test: ./tests/main.cpp $(HDR_FILES) $(SRC_FILES)
+	$(CC) $(CFLAGS) ./tests/main.cpp $(HDR_FILES) $(SRC_FILES) -o ./out/$@
 
 clean:
 	rm -f ./out/*
