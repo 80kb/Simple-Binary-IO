@@ -9,11 +9,14 @@ More functionality showcased in [example.cpp](example.cpp)
 
 //--- Creates a new writer and writes an big-endian unsigned integer
 EndianWriter writer("sample.bin", ENDIAN_BIG);
-writer.WriteUInt32(0xC0FFEE);
+uint32_t num = 0xC0FFEE;
+writer.WriteUInt32(num);
+
 writer.Close();
 
 //--- Creates a new reader and reads a big-endian unsigned integer
 EndianReader reader("sample.bin", ENDIAN_BIG);
 uint32_t num = reader.ReadUInt32();
+
 reader.Close();
 ```
