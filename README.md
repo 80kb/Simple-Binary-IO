@@ -2,9 +2,8 @@
 Simple C++ binary reader/writer made to mimic the syntax of C# binary streams. Supports both big and little endian.
 
 ## Example Usage
-More functionality showcased in [example.cpp](example.cpp)
+More functionality showcased in [tests/main.cpp](tests/main.cpp)
 ```c++
-// library is fully self-contained in endian_lib.hpp
 #include "endian_lib.hpp"
 
 //--- Creates a new writer and writes an big-endian unsigned integer
