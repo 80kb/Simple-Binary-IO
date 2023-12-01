@@ -8,8 +8,7 @@ More functionality showcased in [tests/main.cpp](tests/main.cpp)
 
 //--- Creates a new writer and writes an big-endian unsigned integer
 EndianWriter writer("sample.bin", ENDIAN_BIG);
-uint32_t num = 0xC0FFEE;
-writer.WriteUInt32(num);
+writer.WriteUInt32(0xC0FFEE);
 
 writer.Close();
 
