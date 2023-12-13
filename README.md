@@ -4,7 +4,7 @@ Simple C++ binary reader/writer made to mimic the syntax of C# binary streams. S
 ## Example Usage
 More functionality showcased in [tests/main.cpp](tests/main.cpp)
 ```c++
-#include "endian_lib.hpp"
+#include "endian_lib.h"
 
 //--- Creates a new writer and writes an big-endian unsigned integer
 EndianWriter writer("sample.bin", ENDIAN_BIG);
