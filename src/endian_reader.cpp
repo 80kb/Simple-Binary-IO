@@ -1,4 +1,4 @@
-#include "endian_lib.hpp"
+#include "endian_lib.h"
 #include <string.h>
 
 EndianReader::EndianReader(const char* filename, int endianness) : _endianness(endianness)
@@ -53,13 +53,11 @@ uint8_t EndianReader::ReadByte()
         return (uint8_t)buffer[0];
 }
 
-std::vector<uint8_t> EndianReader::ReadBytes(int length)
+void EndianReader::ReadBytes(uint8_t *buffer, int length)
 {
         Try(length);
-        std::vector<uint8_t> buffer;
         for(int i = 0; i < length; i++)
-                buffer.push_back(ReadByte());
-        return buffer;
+                buffer[i] = ReadByte();
 }
 
 int8_t EndianReader::ReadSByte()
@@ -70,13 +68,11 @@ int8_t EndianReader::ReadSByte()
         return (int8_t)buffer[0];
 }
 
-std::vector<int8_t> EndianReader::ReadSBytes(int length)
+void EndianReader::ReadSBytes(int8_t *buffer, int length)
 {
         Try(length);
-        std::vector<int8_t> buffer;
         for(int i = 0; i < length; i++)
-                buffer.push_back(ReadSByte());
-        return buffer;
+                buffer[i] = ReadSByte();
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -92,13 +88,11 @@ uint16_t EndianReader::ReadUInt16()
                 (unsigned char)buffer[0];
 }
 
-std::vector<uint16_t> EndianReader::ReadUInt16s(int length)
+void EndianReader::ReadUInt16s(uint16_t *buffer, int length)
 {
         Try(length * sizeof(uint16_t));
-        std::vector<uint16_t> buffer;
         for(int i = 0; i < length; i++)
-                buffer.push_back(ReadUInt16());
-        return buffer;
+                buffer[i] = ReadUInt16();
 }
 
 int16_t EndianReader::ReadInt16()
@@ -110,13 +104,11 @@ int16_t EndianReader::ReadInt16()
                 (unsigned char)buffer[0];
 }
 
-std::vector<int16_t> EndianReader::ReadInt16s(int length)
+void EndianReader::ReadInt16s(int16_t *buffer, int length)
 {
         Try(length * sizeof(int16_t));
-        std::vector<int16_t> buffer;
         for(int i = 0; i < length; i++)
-                buffer.push_back(ReadInt16());
-        return buffer;
+                buffer[i] = ReadInt16();
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -133,13 +125,11 @@ uint32_t EndianReader::ReadUInt24()
                 (unsigned char)buffer[0];
 }
 
-std::vector<uint32_t> EndianReader::ReadUInt24s(int length)
+void EndianReader::ReadUInt24s(uint32_t *buffer, int length)
 {
         Try(length * 3);
-        std::vector<uint32_t> buffer;
         for(int i = 0; i < length; i++)
-                buffer.push_back(ReadUInt24());
-        return buffer;
+                buffer[i] = ReadUInt24();
 }
 
 int32_t EndianReader::ReadInt24()
@@ -152,13 +142,11 @@ int32_t EndianReader::ReadInt24()
                 (unsigned char)buffer[0];
 }
 
-std::vector<int32_t> EndianReader::ReadInt24s(int length)
+void EndianReader::ReadInt24s(int32_t *buffer, int length)
 {
         Try(length * 3);
-        std::vector<int32_t> buffer;
         for(int i = 0; i < length; i++)
-                buffer.push_back(ReadInt24());
-        return buffer;
+                buffer[i] = ReadInt24();
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -177,13 +165,11 @@ uint32_t EndianReader::ReadUInt32()
                 (unsigned char)buffer[0];
 }
 
-std::vector<uint32_t> EndianReader::ReadUInt32s(int length)
+void EndianReader::ReadUInt32s(uint32_t *buffer, int length)
 {
         Try(length * sizeof(uint32_t));
-        std::vector<uint32_t> buffer;
         for(int i = 0; i < length; i++)
-                buffer.push_back(ReadUInt32());
-        return buffer;
+                buffer[i] = ReadUInt32();
 }
 
 int32_t EndianReader::ReadInt32()
@@ -197,13 +183,11 @@ int32_t EndianReader::ReadInt32()
                 (unsigned char)buffer[0];
 }
 
-std::vector<int32_t> EndianReader::ReadInt32s(int length)
+void EndianReader::ReadInt32s(int32_t *buffer, int length)
 {
         Try(length * sizeof(int32_t));
-        std::vector<int32_t> buffer;
         for(int i = 0; i < length; i++)
-                buffer.push_back(ReadInt32());
-        return buffer;
+                buffer[i] = ReadInt32();
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -221,13 +205,11 @@ float EndianReader::ReadFloat()
         return out;
 }
 
-std::vector<float> EndianReader::ReadFloats(int length)
+void EndianReader::ReadFloats(float *buffer, int length)
 {
         Try(length * sizeof(float));
-        std::vector<float> buffer;
         for(int i = 0; i < length; i++)
-                buffer.push_back(ReadFloat());
-        return buffer;
+                buffer[i] = ReadFloat();
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -245,27 +227,24 @@ double EndianReader::ReadDouble()
         return out;
 }
 
-std::vector<double> EndianReader::ReadDoubles(int length)
+void EndianReader::ReadDoubles(double *buffer, int length)
 {
         Try(length * sizeof(double));
-        std::vector<double> buffer;
         for(int i = 0; i < length; i++)
-                buffer.push_back(ReadDouble());
-        return buffer;
+                buffer[i] = ReadDouble();
 }
 
 //////////////////////////////////////////////////////////////////////////
 ////////////////                Read Strings              ////////////////
 //////////////////////////////////////////////////////////////////////////
 
-std::string EndianReader::ReadStringNT()
+void EndianReader::ReadStringNT(char *buffer)
 {
-        std::string out = "";
         char letter = ReadByte();
+        int i = 0;
         while(letter != 0)
         {
-                out += letter;
+                buffer[i++] = letter;
                 letter = ReadByte();
         }
-        return out;
 }
