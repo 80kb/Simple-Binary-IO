@@ -1,4 +1,4 @@
-#include "endian_lib.hpp"
+#include "endian_lib.h"
 #include <string.h>
 
 EndianWriter::EndianWriter(const char* filename, int endianness) : _endianness(endianness)
@@ -36,9 +36,9 @@ void EndianWriter::WriteByte(uint8_t data)
         WriteBuffer(buffer, 1, 1);
 }
 
-void EndianWriter::WriteBytes(std::vector<uint8_t> data)
+void EndianWriter::WriteBytes(uint8_t *data, int length)
 {
-        for(size_t i = 0; i < data.size(); i++)
+        for(int i = 0; i < length; i++)
                 WriteByte(data[i]);
 }
 
@@ -49,9 +49,9 @@ void EndianWriter::WriteSByte(int8_t data)
         WriteBuffer(buffer, 1, 1);
 }
 
-void EndianWriter::WriteSBytes(std::vector<int8_t> data)
+void EndianWriter::WriteSBytes(int8_t *data, int length)
 {
-        for(size_t i = 0; i < data.size(); i++)
+        for(int i = 0; i < length; i++)
                 WriteSByte(data[i]);
 }
 
@@ -66,9 +66,9 @@ void EndianWriter::WriteUInt16(uint16_t data)
         WriteBuffer(buffer, 2, 2);
 }
 
-void EndianWriter::WriteUInt16s(std::vector<uint16_t> data)
+void EndianWriter::WriteUInt16s(uint16_t *data, int length)
 {
-        for(size_t i = 0; i < data.size(); i++)
+        for(int i = 0; i < length; i++)
                 WriteUInt16(data[i]);
 }
 
@@ -79,9 +79,9 @@ void EndianWriter::WriteInt16(int16_t data)
         WriteBuffer(buffer, 2, 2);
 }
 
-void EndianWriter::WriteInt16s(std::vector<int16_t> data)
+void EndianWriter::WriteInt16s(int16_t *data, int length)
 {
-        for(size_t i = 0; i < data.size(); i++)
+        for(int i = 0; i < length; i++)
                 WriteInt16(data[i]);
 }
 
@@ -98,9 +98,9 @@ void EndianWriter::WriteUInt24(uint32_t data)
         WriteBuffer(buffer, 3, 3);
 }
 
-void EndianWriter::WriteUInt24(std::vector<uint32_t> data)
+void EndianWriter::WriteUInt24(uint32_t *data, int length)
 {
-        for(size_t i = 0; i < data.size(); i++)
+        for(int i = 0; i < length; i++)
                 WriteUInt24(data[i]);
 }
 
@@ -113,9 +113,9 @@ void EndianWriter::WriteInt24(int32_t data)
         WriteBuffer(buffer, 3, 3);
 }
 
-void EndianWriter::WriteInt24s(std::vector<int32_t> data)
+void EndianWriter::WriteInt24s(int32_t *data, int length)
 {
-        for(size_t i = 0; i < data.size(); i++)
+        for(int i = 0; i < length; i++)
                 WriteInt24(data[i]);
 }
 
@@ -130,9 +130,9 @@ void EndianWriter::WriteUInt32(uint32_t data)
         WriteBuffer(buffer, 4, 4);
 }
 
-void EndianWriter::WriteUInt32s(std::vector<uint32_t> data)
+void EndianWriter::WriteUInt32s(uint32_t *data, int length)
 {
-        for(size_t i = 0; i < data.size(); i++)
+        for(int i = 0; i < length; i++)
                 WriteUInt32(data[i]);
 }
 
@@ -143,9 +143,9 @@ void EndianWriter::WriteInt32(int32_t data)
         WriteBuffer(buffer, 4, 4);
 }
 
-void EndianWriter::WriteInt32s(std::vector<int32_t> data)
+void EndianWriter::WriteInt32s(int32_t *data, int length)
 {
-        for(size_t i = 0; i < data.size(); i++)
+        for(int i = 0; i < length; i++)
                 WriteInt32(data[i]);
 }
 
@@ -160,9 +160,9 @@ void EndianWriter::WriteFloat(float data)
         WriteBuffer(buffer, 4, 4);
 }
 
-void EndianWriter::WriteFloats(std::vector<float> data)
+void EndianWriter::WriteFloats(float *data, int length)
 {
-        for(size_t i = 0; i < data.size(); i++)
+        for(int i = 0; i < length; i++)
                 WriteFloat(data[i]);
 }
 
@@ -177,9 +177,9 @@ void EndianWriter::WriteDouble(double data)
         WriteBuffer(buffer, 8, 8);
 }
 
-void EndianWriter::WriteDoubles(std::vector<double> data)
+void EndianWriter::WriteDoubles(double *data, int length)
 {
-        for(size_t i = 0; i < data.size(); i++)
+        for(int i = 0; i < length; i++)
                 WriteDouble(data[i]);
 }
 
@@ -187,10 +187,11 @@ void EndianWriter::WriteDoubles(std::vector<double> data)
 ////////////////                Write Strings           ////////////////
 ////////////////////////////////////////////////////////////////////////
 
-void EndianWriter::WriteStringNT(std::string data)
+void EndianWriter::WriteStringNT(char *data)
 {
-        for(size_t i = 0; i < data.size(); i++)
-                WriteByte(data[i]);
+        int i = 0;
+        while(data[i] != 0)
+                WriteByte(data[i++]);
         WriteByte(0);
 }
 

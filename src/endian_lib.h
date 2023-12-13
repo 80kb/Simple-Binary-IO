@@ -2,8 +2,6 @@
 #define __ENDIAN_LIB_HPP__
 
 #include <fstream>
-#include <vector>
-#include <string>
 
 #ifndef ENDIAN_LITTLE
 #define ENDIAN_LITTLE 0
@@ -59,33 +57,33 @@ public:
         void SetPosition(int position);
         void Close();
 
-        uint8_t ReadByte();
-        int8_t ReadSByte();
-        std::vector<uint8_t> ReadBytes(int length);
-        std::vector<int8_t> ReadSBytes(int length);
+        uint8_t  ReadByte();
+        int8_t   ReadSByte();
+        void     ReadBytes(uint8_t *buffer, int length);
+        void     ReadSBytes(int8_t *buffer, int length);
 
         uint16_t ReadUInt16();
-        int16_t ReadInt16();
-        std::vector<uint16_t> ReadUInt16s(int length);
-        std::vector<int16_t> ReadInt16s(int length);
+        int16_t  ReadInt16();
+        void     ReadUInt16s(uint16_t *buffer, int length);
+        void     ReadInt16s(int16_t *buffer, int length);
 
         uint32_t ReadUInt24();
-        int32_t ReadInt24();
-        std::vector<uint32_t> ReadUInt24s(int length);
-        std::vector<int32_t> ReadInt24s(int length);
+        int32_t  ReadInt24();
+        void     ReadUInt24s(uint32_t *buffer, int length);
+        void     ReadInt24s(int32_t *buffer, int length);
 
         uint32_t ReadUInt32();
-        int32_t ReadInt32();
-        std::vector<uint32_t> ReadUInt32s(int length);
-        std::vector<int32_t> ReadInt32s(int length);
+        int32_t  ReadInt32();
+        void     ReadUInt32s(uint32_t *buffer, int length);
+        void     ReadInt32s(int32_t *buffer, int length);
 
-        float ReadFloat();
-        std::vector<float> ReadFloats(int length);
+        float  ReadFloat();
+        void   ReadFloats(float *buffer, int length);
 
         double ReadDouble();
-        std::vector<double> ReadDoubles(int length);
+        void   ReadDoubles(double *buffer, int length);
 
-        std::string ReadStringNT();
+        void ReadStringNT(char *buffer);
 
 private:
         void Try(int length);
@@ -111,31 +109,31 @@ public:
 
         void WriteByte(uint8_t data);
         void WriteSByte(int8_t data);
-        void WriteBytes(std::vector<uint8_t> data);
-        void WriteSBytes(std::vector<int8_t> data);
+        void WriteBytes(uint8_t *data, int length);
+        void WriteSBytes(int8_t *data, int length);
 
         void WriteUInt16(uint16_t data);
         void WriteInt16(int16_t data);
-        void WriteUInt16s(std::vector<uint16_t> data);
-        void WriteInt16s(std::vector<int16_t> data);
+        void WriteUInt16s(uint16_t *data, int length);
+        void WriteInt16s(int16_t *data, int length);
 
         void WriteUInt24(uint32_t data);
         void WriteInt24(int32_t data);
-        void WriteUInt24(std::vector<uint32_t> data);
-        void WriteInt24s(std::vector<int32_t> data);
+        void WriteUInt24(uint32_t *data, int length);
+        void WriteInt24s(int32_t *data, int length);
 
         void WriteUInt32(uint32_t data);
         void WriteInt32(int32_t data);
-        void WriteUInt32s(std::vector<uint32_t> data);
-        void WriteInt32s(std::vector<int32_t> data);
+        void WriteUInt32s(uint32_t *data, int length);
+        void WriteInt32s(int32_t *data, int length);
 
         void WriteFloat(float data);
-        void WriteFloats(std::vector<float> data);
+        void WriteFloats(float *data, int length);
 
         void WriteDouble(double data);
-        void WriteDoubles(std::vector<double> data);
+        void WriteDoubles(double *data, int length);
 
-        void WriteStringNT(std::string data);
+        void WriteStringNT(char* data);
 
 private:
         void WriteBuffer(char* buffer, const int count, int stride);
