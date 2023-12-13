@@ -8,7 +8,6 @@
 #ifndef ENDIAN_LITTLE
 #define ENDIAN_LITTLE 0
 #endif // ENDIAN_LITTLE
-
 #ifndef ENDIAN_BIG
 #define ENDIAN_BIG 1
 #endif // ENDIAN_LITTLE
