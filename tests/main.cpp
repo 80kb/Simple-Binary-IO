@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../src/endian_lib.hpp"
+#include "../src/endian_lib.h"
 
 int main()
 {
