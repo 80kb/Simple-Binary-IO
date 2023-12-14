@@ -1,5 +1,6 @@
 #include "endian_lib.h"
 #include <string.h>
+#include <assert.h>
 
 EndianReader::EndianReader(const char* filename, int endianness) : _endianness(endianness)
 {
@@ -29,7 +30,7 @@ void EndianReader::SetPosition(int position) { _fin.seekg(position, std::ios::be
 void EndianReader::Close() { _fin.close(); }
 
 //--- Asserts that read attempt does not exceed stream length
-void EndianReader::Try(int length) { ENDIAN_ASSERT(GetPosition() + length <= _stream_length); }
+void EndianReader::Try(int length) { assert(GetPosition() + length <= _stream_length); }
 
 //--- Reads a given amount of raw bytes into buffer
 void EndianReader::FillBuffer(char* buffer, const int count, int stride)
