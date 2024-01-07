@@ -1,28 +1,26 @@
 #include "endian_lib.h"
 #include <string.h>
 
-EndianWriter::EndianWriter(const char* filename, int endianness) : _endianness(endianness)
-{
-        _fout.open(filename, std::ios::out | std::ios::binary);
-}
-
-EndianWriter::~EndianWriter() { Close(); }
+EndianWriter::EndianWriter(char* buffer, int endianness)
+        : _buffer(buffer), _position(0), _endianness(endianness) {}
 
 //--- Position
-int EndianWriter::GetPosition() { return _fout.tellp(); }
-void EndianWriter::SetPosition(int position) { _fout.seekp(position, std::ios::beg); }
-
-//--- Cleanup
-void EndianWriter::Close() { _fout.close(); }
+int EndianWriter::GetPosition() { return _position; }
+void EndianWriter::SetPosition(int position)
+{
+        _buffer -= _position;
+        _position = position;
+        _buffer += _position;
+}
 
 //--- Underlying write call
 void EndianWriter::WriteBuffer(char* buffer, const int count, int stride)
 {
-        if(_endianness == ENDIAN_BIG) {
+        if(_endianness == ENDIAN_BIG)
                 for(int i = 0; i < count; i += stride)
                         ReverseBufferSegment(buffer, i, stride);
-        }
-        _fout.write(buffer, count);
+        memcpy(_buffer, buffer, count);
+        SetPosition(_position + count);
 }
 
 ////////////////////////////////////////////////////////////////////////

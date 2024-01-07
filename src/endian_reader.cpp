@@ -2,32 +2,17 @@
 #include <string.h>
 #include <assert.h>
 
-EndianReader::EndianReader(const char* filename, int endianness) : _endianness(endianness)
-{
-        // Get file length
-        std::ifstream file(filename, std::ios::binary | std::ios::in | std::ios::ate);
-        int size = -1;
-        if(file) {
-                file.seekg(0, std::ios::end);
-                size = file.tellg();
-        }
-        else
-                perror(filename);
-        _stream_length = size;
-        file.close();
-
-        // Open internal stream
-        _fin.open(filename, std::ios::in | std::ios::binary);
-}
-
-EndianReader::~EndianReader() { Close(); }
+EndianReader::EndianReader(char* buffer, int length, int endianness)
+        : _buffer(buffer), _position(0), _stream_length(length), _endianness(endianness) {}
 
 //--- Position
-int EndianReader::GetPosition() { return _fin.tellg(); }
-void EndianReader::SetPosition(int position) { _fin.seekg(position, std::ios::beg); }
-
-//--- Cleanup
-void EndianReader::Close() { _fin.close(); }
+int EndianReader::GetPosition() { return _position; }
+void EndianReader::SetPosition(int position)
+{
+        _buffer -= _position;
+        _position = position;
+        _buffer += _position;
+}
 
 //--- Asserts that read attempt does not exceed stream length
 void EndianReader::Try(int length) { assert(GetPosition() + length <= _stream_length); }
@@ -35,11 +20,11 @@ void EndianReader::Try(int length) { assert(GetPosition() + length <= _stream_le
 //--- Reads a given amount of raw bytes into buffer
 void EndianReader::FillBuffer(char* buffer, const int count, int stride)
 {
-        _fin.read(buffer, count);
-        if(_endianness == ENDIAN_BIG) {
+        memcpy(buffer, _buffer, count);
+        SetPosition(_position + count);
+        if(_endianness == ENDIAN_BIG)
                 for(int i = 0; i < count; i += stride)
                         ReverseBufferSegment(buffer, i, stride);
-        }
 }
 
 //////////////////////////////////////////////////////////////////////////

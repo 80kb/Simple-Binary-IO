@@ -1,7 +1,6 @@
 #ifndef __ENDIAN_LIB_HPP__
 #define __ENDIAN_LIB_HPP__
-
-#include <fstream>
+#include <cstdint>
 
 #ifndef ENDIAN_LITTLE
 #define ENDIAN_LITTLE 0
@@ -19,7 +18,6 @@ class EndianAbstract
 public:
         virtual int GetPosition() = 0;
         virtual void SetPosition(int position) = 0;
-        virtual void Close() = 0;
 
 protected:
         void ReverseBufferSegment(char* buffer, int start, int size)
@@ -40,17 +38,16 @@ protected:
 
 class EndianReader : public EndianAbstract
 {
-        std::ifstream _fin;
+        char *_buffer;
+        int _position;
         int _stream_length;
         int _endianness;
 
 public:
-        EndianReader(const char* filename, int endianness);
-        ~EndianReader();
+        EndianReader(char *buffer, int length, int endianness);
 
         int GetPosition();
         void SetPosition(int position);
-        void Close();
 
         uint8_t  ReadByte();
         int8_t   ReadSByte();
@@ -86,21 +83,20 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////
-////////////////                EndianWriter                ////////////////
+////////////////                BufferWriter                ////////////////
 ////////////////////////////////////////////////////////////////////////////
 
 class EndianWriter : public EndianAbstract
 {
-        std::ofstream _fout;
+        char *_buffer;
+        int _position;
         int _endianness;
 
 public:
-        EndianWriter(const char* filename, int endianness);
-        ~EndianWriter();
+        EndianWriter(char* buffer, int endianness);
 
         int GetPosition();
         void SetPosition(int position);
-        void Close();
 
         void WriteByte(uint8_t data);
         void WriteSByte(int8_t data);

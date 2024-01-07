@@ -1,13 +1,16 @@
 #include <iostream>
 #include "../src/endian_lib.h"
 
+#define TEST_FILE_LENGTH 32
+
 int main()
 {
         ////////////////////////////////////////////////////////
         ////////////////        Write File      ////////////////
         ////////////////////////////////////////////////////////
 
-        EndianWriter writer("sample.bin", ENDIAN_BIG);
+        char buffer[TEST_FILE_LENGTH] = {0};
+        EndianWriter writer(buffer, ENDIAN_BIG);
 
         char byte0 = 0x0A;
         writer.WriteByte(byte0);
@@ -33,13 +36,11 @@ int main()
         uint8_t bytes[4] = {0xA, 0xB, 0xC, 0xD};
         writer.WriteBytes(bytes, 4);
 
-        writer.Close();
-
         ////////////////////////////////////////////////////////
         ////////////////        Read File       ////////////////
         ////////////////////////////////////////////////////////
 
-        EndianReader reader("sample.bin", ENDIAN_BIG);
+        EndianReader reader(buffer, TEST_FILE_LENGTH, ENDIAN_BIG);
 
         char r_byte0 = reader.ReadByte();
         uint16_t r_num0 = reader.ReadUInt16();
@@ -48,7 +49,7 @@ int main()
         uint32_t r_num3 = reader.ReadUInt32();
         char r_str[32]; reader.ReadStringNT(r_str);
         float r_num4 = reader.ReadFloat();
-        uint8_t buffer[4]; reader.ReadBytes(buffer, 4);
+        uint8_t r_buffer[4]; reader.ReadBytes(r_buffer, 4);
 
         std::cout << "reading from sample.bin"  << std::endl << std::endl;
         std::cout << "ReadByte():\t\t"          << (int)r_byte0 << std::endl;
@@ -59,10 +60,8 @@ int main()
         std::cout << "ReadStringNT():\t\t"      << r_str << std::endl;
         std::cout << "ReadFloat():\t\t"         << r_num4 << std::endl;
         std::cout << "ReadBytes():\t\t{ ";
-        for(int i = 0; i < 4; i++) std::cout << (int)buffer[i] << " ";
+        for(int i = 0; i < 4; i++) std::cout << (int)r_buffer[i] << " ";
         std::cout << "}" << std::endl;
-
-        reader.Close();
 
         return 0;
 }
