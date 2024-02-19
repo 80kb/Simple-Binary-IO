@@ -1,4 +1,4 @@
-#include "endian_lib.h"
+#include "endian_lib.hpp"
 #include <string.h>
 #include <assert.h>
 
@@ -71,7 +71,7 @@ uint16_t EndianReader::ReadUInt16()
         char buffer[2];
         FillBuffer(buffer, 2, 2);
         return (uint16_t)((unsigned char)buffer[1] << 8) |
-                (unsigned char)buffer[0];
+			  (unsigned char)buffer[0];
 }
 
 void EndianReader::ReadUInt16s(uint16_t *buffer, int length)
@@ -86,8 +86,8 @@ int16_t EndianReader::ReadInt16()
         Try(2);
         char buffer[2];
         FillBuffer(buffer, 2, 2);
-        return (uint16_t)((unsigned char)buffer[1] << 8) |
-                (unsigned char)buffer[0];
+        return (int16_t)((unsigned char)buffer[1] << 8) |
+			 (unsigned char)buffer[0];
 }
 
 void EndianReader::ReadInt16s(int16_t *buffer, int length)
